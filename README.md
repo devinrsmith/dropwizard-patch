@@ -58,7 +58,7 @@ Getting started
 <dependency>
     <groupId>io.progix.dropwizard</groupId>
     <artifactId>dropwizard-patch</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.2-red2</version>
 </dependency>
 ```
 
