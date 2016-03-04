@@ -22,6 +22,7 @@ import io.dropwizard.testing.FixtureHelpers;
 import io.progix.dropwizard.patch.DefaultJsonPatch;
 import io.progix.dropwizard.patch.JsonPatchDeserializerHelper;
 import io.progix.dropwizard.patch.JsonTestCase;
+import io.progix.dropwizard.patch.OptimizedJsonPatch;
 import io.progix.jackson.JsonPatchOperation;
 import io.progix.jackson.exceptions.JsonPatchFailedException;
 import org.junit.Test;
@@ -61,6 +62,37 @@ public class SpecTests {
 
             JsonPatchOperation[] patchOperations = mapper.convertValue(testCase.getPatch(), JsonPatchOperation[].class);
             DefaultJsonPatch<JsonNode>  patch = new DefaultJsonPatch<>(Arrays.asList(patchOperations), mapper);
+
+            JsonNode resultNode = patch.apply(documentNode);
+            if (testCase.isErrorCase()) {
+                fail("Expected error, but there was none: " + testCase.getError());
+            }
+
+            //If not, just a test to make sure no exceptions
+            if (testCase.getExpected() != null) {
+                JsonNode expectedNode = mapper.readTree(testCase.getExpected());
+
+                assertThat(resultNode).isEqualTo(expectedNode);
+            }
+
+        } catch (JsonPatchFailedException | IllegalArgumentException e) {
+            if (!testCase.isErrorCase()) {
+                fail("Did not expect error but got one", e);
+            }
+        }
+    }
+
+    @Test
+    public void testCaseOptimized() throws IOException {
+        if (testCase.isDisabled()) {
+            return;
+        }
+
+        try {
+            JsonNode documentNode = mapper.readTree(testCase.getDoc());
+
+            JsonPatchOperation[] patchOperations = mapper.convertValue(testCase.getPatch(), JsonPatchOperation[].class);
+            OptimizedJsonPatch<JsonNode> patch = new OptimizedJsonPatch<>(patchOperations, mapper);
 
             JsonNode resultNode = patch.apply(documentNode);
             if (testCase.isErrorCase()) {

@@ -10,5 +10,6 @@ public class JsonPatchDeserializerHelper {
         new ContextualJsonPatchDeserializer(mapper).register();
         new BasicJsonPatchDeserializer(mapper).register();
         new DefaultJsonPatchDeserializer(mapper).register();
+        new OptimizedJsonPatchDeserializer(mapper).register();
     }
 }
