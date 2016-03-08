@@ -41,6 +41,10 @@ public class OptimizedJsonPatch<T> {
         this.mapper = mapper;
     }
 
+    public JsonPatchOperation[] getOperations() {
+        return operations;
+    }
+
     public T apply(T context) throws JsonPatchTestFailedException {
         final Class<T> typeClass = (Class<T>) context.getClass();
 

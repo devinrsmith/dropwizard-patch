@@ -20,7 +20,7 @@ apply plugin: 'signing'
 
 group = "io.progix.dropwizard"
 archivesBaseName = "dropwizard-patch"
-version = "0.2.2-red2"
+version = "0.2.2-red3"
 
 repositories {
     mavenLocal()
