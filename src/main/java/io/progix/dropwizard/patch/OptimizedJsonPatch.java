@@ -21,9 +21,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.progix.jackson.JsonPatch;
 import io.progix.jackson.JsonPatchOperation;
+import io.progix.jackson.exceptions.JsonPatchFailedException;
 import io.progix.jackson.exceptions.JsonPatchTestFailedException;
 
-public class OptimizedJsonPatch<T> {
+public class OptimizedJsonPatch<T> implements JsonPatcher<T> {
 
     protected JsonPatchOperation[] operations;
 
@@ -45,10 +46,11 @@ public class OptimizedJsonPatch<T> {
         return operations;
     }
 
-    public T apply(T context) throws JsonPatchTestFailedException {
-        final Class<T> typeClass = (Class<T>) context.getClass();
+    @Override
+    public T patch(T current) throws JsonPatchFailedException {
+        final Class<T> typeClass = (Class<T>) current.getClass();
 
-        JsonNode node = mapper.convertValue(context, JsonNode.class);
+        JsonNode node = mapper.convertValue(current, JsonNode.class);
 
         // todo note:
         // there is a deep copy that is happening in each op at JsonPatchUtil
@@ -57,5 +59,10 @@ public class OptimizedJsonPatch<T> {
 
         // note: even if there are no operations, we are still getting a new copy of the object (as desired)
         return mapper.convertValue(node, typeClass);
+    }
+
+    @Deprecated
+    public T apply(T context) throws JsonPatchTestFailedException {
+        return patch(context);
     }
 }
